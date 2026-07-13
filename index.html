@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#1C1C1E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="জাপানি শেখো">
+<meta name="description" content="হিরাগানা চার্ট এবং কাতাকানা কুইজ — বাংলায় জাপানি শেখার অ্যাপ">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>জাপানি শেখো</title>
+<style>
+  :root {
+    --bg: #000000;
+    --surface: #1C1C1E;
+    --surface2: #2C2C2E;
+    --surface3: #3A3A3C;
+    --border: rgba(255,255,255,0.08);
+    --text: #FFFFFF;
+    --text2: #EBEBF5CC;
+    --text3: #EBEBF599;
+    --accent: #FF375F;
+    --accent2: #FF6B81;
+    --blue: #0A84FF;
+    --green: #30D158;
+    --orange: #FF9F0A;
+    --purple: #BF5AF2;
+    --yellow: #FFD60A;
+    --red: #FF453A;
+    --radius: 16px;
+    --radius-sm: 10px;
+    --radius-xs: 8px;
+    --shadow: 0 8px 32px rgba(0,0,0,0.5);
+    --font: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+    --font-jp: 'Hiragino Sans', 'Yu Gothic', 'Noto Sans JP', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    min-height: 100dvh;
+    overscroll-behavior: none;
+  }
+
+  /* Install Banner */
+  #install-banner {
+    display: none;
+    position: fixed;
+    bottom: calc(env(safe-area-inset-bottom) + 80px);
+    left: 16px; right: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    box-shadow: var(--shadow);
+    z-index: 1000;
+    align-items: center;
+    gap: 12px;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+  #install-banner.show { display: flex; }
+  .install-icon { font-size: 32px; flex-shrink: 0; }
+  .install-text { flex: 1; }
+  .install-text strong { display: block; font-size: 14px; font-weight: 600; }
+  .install-text span { font-size: 12px; color: var(--text3); }
+  .install-btn {
+    background: var(--blue);
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .install-close {
+    background: none;
+    border: none;
+    color: var(--text3);
+    font-size: 18px;
+    cursor: pointer;
+    padding: 4px;
+  }
+
+  /* iOS Install Guide */
+  #ios-guide {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    z-index: 2000;
+    align-items: flex-end;
+    padding: 16px;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+  #ios-guide.show { display: flex; }
+  .ios-guide-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 24px;
+    width: 100%;
+    text-align: center;
+  }
+  .ios-guide-card h3 { font-size: 18px; margin-bottom: 8px; }
+  .ios-guide-card p { color: var(--text2); font-size: 14px; margin-bottom: 20px; line-height: 1.5; }
+  .ios-steps { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+  .ios-step { display: flex; align-items: center; gap: 12px; text-align: left; }
+  .ios-step-num { width: 28px; height: 28px; background: var(--blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+  .ios-step span { font-size: 14px; color: var(--text2); }
+  .ios-guide-close { width: 100%; padding: 14px; background: var(--surface3); border: none; color: var(--text); border-radius: var(--radius-sm); font-size: 16px; font-weight: 600; cursor: pointer; }
+
+  /* Header */
+  header {
+    position: sticky;
+    top: 0;
+    padding: calc(env(safe-area-inset-top) + 12px) 20px 12px;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    z-index: 100;
+  }
+  .header-inner { max-width: 900px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+  .logo { display: flex; align-items: center; gap: 10px; }
+  .logo-icon { font-size: 26px; }
+  .logo h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.3px; }
+  .logo span { font-size: 11px; color: var(--text3); display: block; font-weight: 400; }
+  .header-actions { display: flex; gap: 8px; }
+  .header-btn {
+    background: var(--surface2);
+    border: none;
+    color: var(--text2);
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 0.2s;
+  }
+  .header-btn:hover { background: var(--surface3); }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 3px;
+    margin: 20px auto;
+    max-width: 900px;
+    width: calc(100% - 32px);
+  }
+  .tab {
+    flex: 1;
+    padding: 9px 12px;
+    border: none;
+    background: none;
+    color: var(--text3);
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 9px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .tab.active {
+    background: var(--surface3);
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  /* Main content */
+  main { max-width: 900px; margin: 0 auto; padding: 0 16px; padding-bottom: calc(env(safe-area-inset-bottom) + 100px); }
+
+  /* Section */
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* Section header */
+  .section-header { margin-bottom: 20px; }
+  .section-header h2 { font-size: 26px; font-weight: 700; letter-spacing: -0.5px; }
+  .section-header p { color: var(--text3); font-size: 14px; margin-top: 4px; }
+
+  /* Hiragana Chart */
+  .chart-group { margin-bottom: 28px; }
+  .chart-group-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 10px;
+    padding-left: 2px;
+  }
+  .chart-row { display: flex; gap: 6px; flex-wrap: wrap; }
+  .kana-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    min-width: 62px;
+    flex: 1;
+    max-width: 80px;
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+  .kana-card:hover { background: var(--surface2); transform: scale(1.03); }
+  .kana-card:active { transform: scale(0.97); }
+  .kana-char {
+    font-family: var(--font-jp);
+    font-size: 26px;
+    font-weight: 400;
+    line-height: 1;
+    color: var(--text);
+  }
+  .kana-roman { font-size: 11px; color: var(--text3); font-weight: 500; }
+  .kana-bn { font-size: 10px; color: var(--accent2); font-weight: 500; }
+  .kana-card.highlight { border-color: var(--accent); background: rgba(255,55,95,0.08); }
+
+  /* Sound indicator */
+  .kana-card.playing { border-color: var(--blue); background: rgba(10,132,255,0.1); }
+  .kana-card.playing .kana-char { color: var(--blue); }
+
+  /* Special cards */
+  .kana-card.empty { background: transparent; border-color: transparent; pointer-events: none; opacity: 0; }
+  .kana-card.n-card { background: rgba(191,90,242,0.1); border-color: rgba(191,90,242,0.3); }
+  .kana-card.n-card .kana-char { color: var(--purple); }
+
+  /* Search bar */
+  .search-bar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .search-bar input {
+    flex: 1;
+    background: none;
+    border: none;
+    color: var(--text);
+    font-size: 15px;
+    outline: none;
+    font-family: var(--font);
+  }
+  .search-bar input::placeholder { color: var(--text3); }
+  .search-icon { color: var(--text3); font-size: 16px; }
+
+  /* Quiz section */
+  .quiz-container { text-align: center; }
+  .quiz-stats {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .stat-card {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px 12px;
+  }
+  .stat-num { font-size: 26px; font-weight: 700; }
+  .stat-label { font-size: 11px; color: var(--text3); margin-top: 2px; font-weight: 500; }
+  .stat-card.correct .stat-num { color: var(--green); }
+  .stat-card.wrong .stat-num { color: var(--red); }
+  .stat-card.streak .stat-num { color: var(--orange); }
+
+  /* Quiz card */
+  .quiz-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 40px 24px 32px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .quiz-card::before {
+    content: '';
+    position: absolute;
+    top: -40px; left: 50%; transform: translateX(-50%);
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(255,55,95,0.06) 0%, transparent 70%);
+  }
+  .quiz-mode-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,159,10,0.12);
+    color: var(--orange);
+    border: 1px solid rgba(255,159,10,0.2);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 24px;
+  }
+  .quiz-question {
+    font-family: var(--font-jp);
+    font-size: 80px;
+    font-weight: 300;
+    margin-bottom: 8px;
+    line-height: 1;
+    color: var(--text);
+    position: relative;
+    z-index: 1;
+  }
+  .quiz-hint { font-size: 13px; color: var(--text3); margin-bottom: 8px; }
+  .quiz-progress-bar {
+    height: 3px;
+    background: var(--surface2);
+    border-radius: 2px;
+    margin-top: 20px;
+    overflow: hidden;
+  }
+  .quiz-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--orange));
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+
+  /* Answer input */
+  .answer-area { margin-bottom: 16px; }
+  .answer-input-wrap { position: relative; }
+  .answer-input {
+    width: 100%;
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text);
+    text-align: center;
+    outline: none;
+    font-family: var(--font);
+    transition: border-color 0.2s;
+    letter-spacing: 1px;
+  }
+  .answer-input:focus { border-color: var(--blue); }
+  .answer-input.correct { border-color: var(--green); background: rgba(48,209,88,0.06); }
+  .answer-input.wrong { border-color: var(--red); background: rgba(255,69,58,0.06); }
+
+  /* Answer feedback */
+  .feedback {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 600;
+    opacity: 0;
+    transition: opacity 0.2s;
+    gap: 8px;
+  }
+  .feedback.show { opacity: 1; }
+  .feedback.correct { color: var(--green); }
+  .feedback.wrong { color: var(--red); }
+
+  /* Options grid (multiple choice) */
+  .options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .option-btn {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 16px 12px;
+    color: var(--text);
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: var(--font-jp);
+    position: relative;
+    overflow: hidden;
+  }
+  .option-btn:hover:not(:disabled) { background: var(--surface2); border-color: var(--blue); }
+  .option-btn:active:not(:disabled) { transform: scale(0.97); }
+  .option-btn.correct { border-color: var(--green); background: rgba(48,209,88,0.08); color: var(--green); }
+  .option-btn.wrong { border-color: var(--red); background: rgba(255,69,58,0.08); color: var(--red); }
+  .option-btn:disabled { opacity: 0.6; cursor: default; }
+
+  /* Action buttons */
+  .btn {
+    padding: 14px 28px;
+    border: none;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: var(--font);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: var(--accent2); }
+  .btn-secondary { background: var(--surface2); color: var(--text); }
+  .btn-secondary:hover { background: var(--surface3); }
+  .btn-blue { background: var(--blue); color: #fff; }
+  .btn-green { background: var(--green); color: #000; }
+  .btn:active { transform: scale(0.96); }
+  .btn-block { width: 100%; justify-content: center; }
+
+  /* Quiz mode selector */
+  .quiz-modes {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .quiz-modes::-webkit-scrollbar { display: none; }
+  .mode-pill {
+    flex-shrink: 0;
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text2);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .mode-pill.active { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+
+  /* Score screen */
+  .score-screen { text-align: center; padding: 20px 0; }
+  .score-emoji { font-size: 64px; margin-bottom: 16px; }
+  .score-title { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+  .score-sub { color: var(--text3); font-size: 15px; margin-bottom: 32px; }
+  .score-big { font-size: 72px; font-weight: 800; background: linear-gradient(135deg, var(--accent), var(--orange)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px; }
+  .score-actions { display: flex; flex-direction: column; gap: 10px; }
+  .wrong-list { background: var(--surface); border-radius: var(--radius); padding: 16px; margin-bottom: 24px; text-align: left; }
+  .wrong-list h4 { font-size: 13px; color: var(--text3); margin-bottom: 12px; font-weight: 600; letter-spacing: 0.5px; }
+  .wrong-item { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .wrong-item:last-child { border-bottom: none; }
+  .wrong-kana { font-family: var(--font-jp); font-size: 24px; }
+  .wrong-answer { flex: 1; }
+  .wrong-answer .correct-a { color: var(--green); font-weight: 600; font-size: 14px; }
+  .wrong-answer .user-a { color: var(--red); font-size: 13px; }
+
+  /* Nav bar (mobile) */
+  .nav-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0; right: 0;
+    background: rgba(28,28,30,0.92);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid var(--border);
+    display: flex;
+    padding: 8px 16px;
+    padding-bottom: calc(env(safe-area-inset-bottom) + 8px);
+    z-index: 50;
+  }
+  .nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    background: none;
+    border: none;
+    color: var(--text3);
+    font-size: 10px;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 6px 0;
+    transition: color 0.2s;
+    font-family: var(--font);
+  }
+  .nav-item.active { color: var(--accent); }
+  .nav-icon { font-size: 22px; line-height: 1; }
+
+  /* Combo bar */
+  .combo-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 50px;
+    padding: 8px 16px;
+    margin-bottom: 16px;
+  }
+  .combo-text { font-size: 13px; color: var(--text3); }
+  .combo-flame { font-size: 22px; }
+  .combo-count { font-size: 18px; font-weight: 700; color: var(--orange); }
+
+  /* Info section */
+  .info-cards { display: flex; flex-direction: column; gap: 12px; }
+  .info-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+  }
+  .info-card h3 { font-size: 17px; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+  .info-card p { font-size: 14px; color: var(--text2); line-height: 1.6; }
+  .info-badge { display: inline-block; background: rgba(10,132,255,0.15); color: var(--blue); padding: 2px 8px; border-radius: 6px; font-size: 12px; font-weight: 600; }
+
+  /* Responsive */
+  @media (min-width: 600px) {
+    .quiz-question { font-size: 110px; }
+    .chart-row { flex-wrap: wrap; gap: 8px; }
+    .kana-card { min-width: 72px; }
+    .options-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+  }
+
+  @media (min-width: 900px) {
+    .nav-bar { display: none; }
+    .tabs { margin: 24px auto; }
+    main { padding: 0 24px; padding-bottom: 40px; }
+    .kana-card { min-width: 76px; }
+  }
+
+  /* Animations */
+  @keyframes pop { 0% { transform: scale(0.8); opacity: 0; } 60% { transform: scale(1.1); } 100% { transform: scale(1); opacity: 1; } }
+  @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+  .animate-pop { animation: pop 0.3s ease forwards; }
+  .animate-shake { animation: shake 0.3s ease; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Install Banner -->
+<div id="install-banner">
+  <span class="install-icon">🎌</span>
+  <div class="install-text">
+    <strong>অ্যাপ ইনস্টল করো</strong>
+    <span>অফলাইনেও কাজ করবে</span>
+  </div>
+  <button class="install-btn" onclick="installApp()">ইনস্টল</button>
+  <button class="install-close" onclick="document.getElementById('install-banner').classList.remove('show')">✕</button>
+</div>
+
+<!-- iOS Install Guide -->
+<div id="ios-guide">
+  <div class="ios-guide-card">
+    <h3>📱 হোম স্ক্রিনে যোগ করো</h3>
+    <p>Safari থেকে এই ধাপগুলো অনুসরণ করো</p>
+    <div class="ios-steps">
+      <div class="ios-step">
+        <div class="ios-step-num">১</div>
+        <span>নিচের <strong>শেয়ার</strong> বাটন চাপো (□↑)</span>
+      </div>
+      <div class="ios-step">
+        <div class="ios-step-num">২</div>
+        <span><strong>"Add to Home Screen"</strong> সিলেক্ট করো</span>
+      </div>
+      <div class="ios-step">
+        <div class="ios-step-num">৩</div>
+        <span>উপরে <strong>"Add"</strong> চাপো</span>
+      </div>
+    </div>
+    <button class="ios-guide-close" onclick="document.getElementById('ios-guide').classList.remove('show')">বন্ধ করো</button>
+  </div>
+</div>
+
+<!-- Header -->
+<header>
+  <div class="header-inner">
+    <div class="logo">
+      <span class="logo-icon">🎌</span>
+      <div>
+        <h1>জাপানি শেখো</h1>
+        <span>হিরাগানা • কাতাকানা</span>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="header-btn" onclick="showInstallGuide()">📲 ইনস্টল</button>
+    </div>
+  </div>
+</header>
+
+<!-- Tabs -->
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('hiragana')">
+    <span>あ</span> হিরাগানা
+  </button>
+  <button class="tab" onclick="switchTab('quiz')">
+    <span>🎯</span> কুইজ
+  </button>
+  <button class="tab" onclick="switchTab('info')">
+    <span>📖</span> গাইড
+  </button>
+</div>
+
+<!-- Main -->
+<main>
+
+  <!-- HIRAGANA SECTION -->
+  <section id="sec-hiragana" class="section active">
+    <div class="section-header">
+      <h2>হিরাগানা চার্ট</h2>
+      <p>৪৬টি মূল অক্ষর — ট্যাপ করে উচ্চারণ শোনো</p>
+    </div>
+
+    <div class="search-bar">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="রোমান হরফে খোঁজো (ka, sa, na...)" oninput="filterKana(this.value)" id="search-input">
+    </div>
+
+    <div id="hiragana-chart"></div>
+  </section>
+
+  <!-- QUIZ SECTION -->
+  <section id="sec-quiz" class="section">
+    <div id="quiz-setup">
+      <div class="section-header">
+        <h2>কাতাকানা কুইজ</h2>
+        <p>টাইপ করে বা বেছে নিয়ে উত্তর দাও</p>
+      </div>
+
+      <div class="quiz-modes">
+        <button class="mode-pill active" onclick="setQuizMode('type')">⌨️ টাইপ করো</button>
+        <button class="mode-pill" onclick="setQuizMode('choice')">🎯 চারটি অপশন</button>
+        <button class="mode-pill" onclick="setQuizMode('hard')">🔥 হিরাগানাও</button>
+      </div>
+
+      <div class="quiz-stats">
+        <div class="stat-card correct"><div class="stat-num" id="stat-correct">0</div><div class="stat-label">সঠিক</div></div>
+        <div class="stat-card wrong"><div class="stat-num" id="stat-wrong">0</div><div class="stat-label">ভুল</div></div>
+        <div class="stat-card streak"><div class="stat-num" id="stat-streak">0</div><div class="stat-label">🔥 স্ট্রিক</div></div>
+      </div>
+
+      <div class="combo-bar">
+        <span class="combo-text">লক্ষ্য: ১০টি সঠিক উত্তর</span>
+        <span class="combo-flame">🎯</span>
+        <span class="combo-count" id="combo-count">০/১০</span>
+      </div>
+
+      <div class="quiz-card">
+        <div class="quiz-mode-badge">
+          <span>カタカナ</span>
+          <span id="quiz-mode-label">টাইপ মোড</span>
+        </div>
+        <div class="quiz-question animate-pop" id="quiz-char">ア</div>
+        <div class="quiz-hint" id="quiz-hint">এই কাতাকানার রোমান হরফ কী?</div>
+        <div class="quiz-progress-bar">
+          <div class="quiz-progress-fill" id="quiz-progress" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <!-- Type mode -->
+      <div id="type-mode-area" class="answer-area">
+        <div class="answer-input-wrap">
+          <input class="answer-input" id="type-answer" type="text" placeholder="রোমান হরফে লেখো..." autocomplete="off" autocorrect="off" spellcheck="false" maxlength="4">
+        </div>
+        <div class="feedback" id="type-feedback"></div>
+        <button class="btn btn-primary btn-block" onclick="checkTypeAnswer()">✓ চেক করো</button>
+      </div>
+
+      <!-- Choice mode -->
+      <div id="choice-mode-area" class="answer-area" style="display:none">
+        <div class="options-grid" id="options-grid"></div>
+        <div class="feedback" id="choice-feedback"></div>
+      </div>
+    </div>
+
+    <!-- Score Screen -->
+    <div id="quiz-score" style="display:none">
+      <div class="score-screen">
+        <div class="score-emoji" id="score-emoji">🎉</div>
+        <div class="score-title" id="score-title">দারুণ!</div>
+        <div class="score-big" id="score-pct">80%</div>
+        <div class="score-sub" id="score-sub">১০টির মধ্যে ৮টি সঠিক</div>
+
+        <div class="wrong-list" id="wrong-list" style="display:none">
+          <h4>ভুল উত্তরগুলো</h4>
+          <div id="wrong-items"></div>
+        </div>
+
+        <div class="score-actions">
+          <button class="btn btn-primary btn-block" onclick="restartQuiz()">🔄 আবার চেষ্টা করো</button>
+          <button class="btn btn-secondary btn-block" onclick="switchTab('hiragana')">📖 চার্ট দেখো</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- INFO SECTION -->
+  <section id="sec-info" class="section">
+    <div class="section-header">
+      <h2>শেখার গাইড</h2>
+      <p>জাপানি লিপি সম্পর্কে জানো</p>
+    </div>
+    <div class="info-cards">
+      <div class="info-card">
+        <h3>あ হিরাগানা কী? <span class="info-badge">মূল লিপি</span></h3>
+        <p>হিরাগানা জাপানের প্রধান লিখন পদ্ধতি। এতে ৪৬টি মূল অক্ষর আছে। জাপানি শিশুরা প্রথমে এটাই শেখে। ব্যাকরণিক চিহ্ন, ক্রিয়া, এবং বিশেষণের শেষাংশ হিরাগানায় লেখা হয়।</p>
+      </div>
+      <div class="info-card">
+        <h3>ア কাতাকানা কী? <span class="info-badge">বিদেশী শব্দ</span></h3>
+        <p>কাতাকানা দিয়ে বিদেশী শব্দ লেখা হয়। যেমন: コンピュータ (Computer), テレビ (Television)। ৪৬টি অক্ষর হিরাগানার মতোই, শুধু আকৃতি কোণাকুণি ও সরল।</p>
+      </div>
+      <div class="info-card">
+        <h3>🎯 কীভাবে শিখবো?</h3>
+        <p>প্রথমে হিরাগানা চার্ট দেখো এবং প্রতিটি অক্ষর বারবার লেখো। তারপর কুইজে অংশ নাও। প্রতিদিন ১০ মিনিট চর্চা করলে ২ সপ্তাহে মুখস্থ হয়ে যাবে!</p>
+      </div>
+      <div class="info-card">
+        <h3>📊 স্বরধ্বনির ক্রম</h3>
+        <p>জাপানিতে ৫টি স্বর: あ(a), い(i), う(u), え(e), お(o)। প্রতিটি ব্যঞ্জনের সাথে এই ৫টি স্বর যুক্ত হয়: か(ka), き(ki), く(ku), け(ke), こ(ko)।</p>
+      </div>
+      <div class="info-card">
+        <h3>📲 অ্যাপ ইনস্টল</h3>
+        <p>উপরের "ইনস্টল" বাটন চেপে এই অ্যাপ সরাসরি হোম স্ক্রিনে রাখো। ইন্টারনেট ছাড়াও কাজ করবে!</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- Bottom Nav -->
+<nav class="nav-bar">
+  <button class="nav-item active" id="nav-hiragana" onclick="switchTab('hiragana')">
+    <span class="nav-icon">あ</span>হিরাগানা
+  </button>
+  <button class="nav-item" id="nav-quiz" onclick="switchTab('quiz')">
+    <span class="nav-icon">🎯</span>কুইজ
+  </button>
+  <button class="nav-item" id="nav-info" onclick="switchTab('info')">
+    <span class="nav-icon">📖</span>গাইড
+  </button>
+</nav>
+
+<script>
+// ===== DATA =====
+const HIRAGANA = [
+  // Vowels
+  { char: 'あ', roman: 'a', bn: 'আ' }, { char: 'い', roman: 'i', bn: 'ই' },
+  { char: 'う', roman: 'u', bn: 'উ' }, { char: 'え', roman: 'e', bn: 'এ' },
+  { char: 'お', roman: 'o', bn: 'ও' },
+  // K row
+  { char: 'か', roman: 'ka', bn: 'কা' }, { char: 'き', roman: 'ki', bn: 'কি' },
+  { char: 'く', roman: 'ku', bn: 'কু' }, { char: 'け', roman: 'ke', bn: 'কে' },
+  { char: 'こ', roman: 'ko', bn: 'কো' },
+  // S row
+  { char: 'さ', roman: 'sa', bn: 'সা' }, { char: 'し', roman: 'shi', bn: 'শি' },
+  { char: 'す', roman: 'su', bn: 'সু' }, { char: 'せ', roman: 'se', bn: 'সে' },
+  { char: 'そ', roman: 'so', bn: 'সো' },
+  // T row
+  { char: 'た', roman: 'ta', bn: 'তা' }, { char: 'ち', roman: 'chi', bn: 'চি' },
+  { char: 'つ', roman: 'tsu', bn: 'ৎসু' }, { char: 'て', roman: 'te', bn: 'তে' },
+  { char: 'と', roman: 'to', bn: 'তো' },
+  // N row
+  { char: 'な', roman: 'na', bn: 'না' }, { char: 'に', roman: 'ni', bn: 'নি' },
+  { char: 'ぬ', roman: 'nu', bn: 'নু' }, { char: 'ね', roman: 'ne', bn: 'নে' },
+  { char: 'の', roman: 'no', bn: 'নো' },
+  // H row
+  { char: 'は', roman: 'ha', bn: 'হা' }, { char: 'ひ', roman: 'hi', bn: 'হি' },
+  { char: 'ふ', roman: 'fu', bn: 'ফু' }, { char: 'へ', roman: 'he', bn: 'হে' },
+  { char: 'ほ', roman: 'ho', bn: 'হো' },
+  // M row
+  { char: 'ま', roman: 'ma', bn: 'মা' }, { char: 'み', roman: 'mi', bn: 'মি' },
+  { char: 'む', roman: 'mu', bn: 'মু' }, { char: 'め', roman: 'me', bn: 'মে' },
+  { char: 'も', roman: 'mo', bn: 'মো' },
+  // Y row
+  { char: 'や', roman: 'ya', bn: 'য়া' }, { char: 'ゆ', roman: 'yu', bn: 'য়ু' },
+  { char: 'よ', roman: 'yo', bn: 'য়ো' },
+  // R row
+  { char: 'ら', roman: 'ra', bn: 'রা' }, { char: 'り', roman: 'ri', bn: 'রি' },
+  { char: 'る', roman: 'ru', bn: 'রু' }, { char: 'れ', roman: 're', bn: 'রে' },
+  { char: 'ろ', roman: 'ro', bn: 'রো' },
+  // W row
+  { char: 'わ', roman: 'wa', bn: 'ওয়া' }, { char: 'を', roman: 'wo', bn: 'ও' },
+  // N
+  { char: 'ん', roman: 'n', bn: 'ন', special: true }
+];
+
+const KATAKANA = [
+  { char: 'ア', roman: 'a', bn: 'আ' }, { char: 'イ', roman: 'i', bn: 'ই' },
+  { char: 'ウ', roman: 'u', bn: 'উ' }, { char: 'エ', roman: 'e', bn: 'এ' },
+  { char: 'オ', roman: 'o', bn: 'ও' },
+  { char: 'カ', roman: 'ka', bn: 'কা' }, { char: 'キ', roman: 'ki', bn: 'কি' },
+  { char: 'ク', roman: 'ku', bn: 'কু' }, { char: 'ケ', roman: 'ke', bn: 'কে' },
+  { char: 'コ', roman: 'ko', bn: 'কো' },
+  { char: 'サ', roman: 'sa', bn: 'সা' }, { char: 'シ', roman: 'shi', bn: 'শি' },
+  { char: 'ス', roman: 'su', bn: 'সু' }, { char: 'セ', roman: 'se', bn: 'সে' },
+  { char: 'ソ', roman: 'so', bn: 'সো' },
+  { char: 'タ', roman: 'ta', bn: 'তা' }, { char: 'チ', roman: 'chi', bn: 'চি' },
+  { char: 'ツ', roman: 'tsu', bn: 'ৎসু' }, { char: 'テ', roman: 'te', bn: 'তে' },
+  { char: 'ト', roman: 'to', bn: 'তো' },
+  { char: 'ナ', roman: 'na', bn: 'না' }, { char: 'ニ', roman: 'ni', bn: 'নি' },
+  { char: 'ヌ', roman: 'nu', bn: 'নু' }, { char: 'ネ', roman: 'ne', bn: 'নে' },
+  { char: 'ノ', roman: 'no', bn: 'নো' },
+  { char: 'ハ', roman: 'ha', bn: 'হা' }, { char: 'ヒ', roman: 'hi', bn: 'হি' },
+  { char: 'フ', roman: 'fu', bn: 'ফু' }, { char: 'ヘ', roman: 'he', bn: 'হে' },
+  { char: 'ホ', roman: 'ho', bn: 'হো' },
+  { char: 'マ', roman: 'ma', bn: 'মা' }, { char: 'ミ', roman: 'mi', bn: 'মি' },
+  { char: 'ム', roman: 'mu', bn: 'মু' }, { char: 'メ', roman: 'me', bn: 'মে' },
+  { char: 'モ', roman: 'mo', bn: 'মো' },
+  { char: 'ヤ', roman: 'ya', bn: 'য়া' }, { char: 'ユ', roman: 'yu', bn: 'য়ু' },
+  { char: 'ヨ', roman: 'yo', bn: 'য়ো' },
+  { char: 'ラ', roman: 'ra', bn: 'রা' }, { char: 'リ', roman: 'ri', bn: 'রি' },
+  { char: 'ル', roman: 'ru', bn: 'রু' }, { char: 'レ', roman: 're', bn: 'রে' },
+  { char: 'ロ', roman: 'ro', bn: 'রো' },
+  { char: 'ワ', roman: 'wa', bn: 'ওয়া' }, { char: 'ヲ', roman: 'wo', bn: 'ও' },
+  { char: 'ン', roman: 'n', bn: 'ন', special: true }
+];
+
+const GROUPS = [
+  { label: 'স্বরধ্বনি (Vowels)', count: 5 },
+  { label: 'K সারি', count: 5 },
+  { label: 'S সারি', count: 5 },
+  { label: 'T সারি', count: 5 },
+  { label: 'N সারি', count: 5 },
+  { label: 'H সারি', count: 5 },
+  { label: 'M সারি', count: 5 },
+  { label: 'Y সারি', count: 3 },
+  { label: 'R সারি', count: 5 },
+  { label: 'W সারি', count: 2 },
+  { label: 'একক', count: 1 },
+];
+
+// ===== Quiz State =====
+let quizMode = 'type';
+let quizPool = [];
+let currentQ = null;
+let correct = 0, wrong = 0, streak = 0, sessionTotal = 10;
+let answered = 0;
+let wrongAnswers = [];
+let deferredPrompt = null;
+let isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+
+// ===== BUILD HIRAGANA CHART =====
+function buildChart() {
+  const container = document.getElementById('hiragana-chart');
+  let idx = 0;
+  GROUPS.forEach(group => {
+    const div = document.createElement('div');
+    div.className = 'chart-group';
+    div.innerHTML = `<div class="chart-group-label">${group.label}</div><div class="chart-row" id="row-${idx}"></div>`;
+    container.appendChild(div);
+
+    const row = div.querySelector('.chart-row');
+    for (let i = 0; i < group.count; i++) {
+      const k = HIRAGANA[idx + i];
+      if (!k) continue;
+      const card = document.createElement('div');
+      card.className = `kana-card${k.special ? ' n-card' : ''}`;
+      card.dataset.roman = k.roman;
+      card.innerHTML = `
+        <span class="kana-char">${k.char}</span>
+        <span class="kana-roman">${k.roman}</span>
+        <span class="kana-bn">${k.bn}</span>
+      `;
+      card.onclick = () => speakKana(k.roman, card);
+      row.appendChild(card);
+    }
+    idx += group.count;
+  });
+}
+
+// ===== SPEAK (Web Speech API) =====
+function speakKana(text, card) {
+  // Remove any playing state
+  document.querySelectorAll('.kana-card.playing').forEach(c => c.classList.remove('playing'));
+  if (card) card.classList.add('playing');
+
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = 'ja-JP';
+  utterance.rate = 0.8;
+  utterance.pitch = 1.1;
+  utterance.onend = () => { if (card) card.classList.remove('playing'); };
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(utterance);
+}
+
+// ===== FILTER =====
+function filterKana(val) {
+  const q = val.toLowerCase().trim();
+  document.querySelectorAll('.kana-card').forEach(card => {
+    const roman = card.dataset.roman || '';
+    if (!q || roman.includes(q)) {
+      card.style.opacity = '1';
+      card.style.transform = '';
+    } else {
+      card.style.opacity = '0.2';
+      card.style.transform = 'scale(0.9)';
+    }
+  });
+}
+
+// ===== TABS =====
+function switchTab(name) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+  document.getElementById(`sec-${name}`).classList.add('active');
+  const tabBtns = document.querySelectorAll('.tab');
+  const tabMap = { hiragana: 0, quiz: 1, info: 2 };
+  tabBtns[tabMap[name]].classList.add('active');
+  const nav = document.getElementById(`nav-${name}`);
+  if (nav) nav.classList.add('active');
+
+  if (name === 'quiz') initQuiz();
+}
+
+// ===== QUIZ =====
+function setQuizMode(mode) {
+  quizMode = mode;
+  document.querySelectorAll('.mode-pill').forEach(p => p.classList.remove('active'));
+  event.target.classList.add('active');
+  const labels = { type: 'টাইপ মোড', choice: '৪ অপশন মোড', hard: 'হার্ড মোড' };
+  document.getElementById('quiz-mode-label').textContent = labels[mode];
+  restartQuiz();
+}
+
+function initQuiz() {
+  let pool = [...KATAKANA];
+  if (quizMode === 'hard') pool = [...KATAKANA, ...HIRAGANA];
+  quizPool = shuffle(pool);
+  correct = 0; wrong = 0; streak = 0; answered = 0;
+  wrongAnswers = [];
+  updateStats();
+  document.getElementById('quiz-setup').style.display = '';
+  document.getElementById('quiz-score').style.display = 'none';
+  nextQuestion();
+}
+
+function restartQuiz() { initQuiz(); }
+
+function nextQuestion() {
+  if (answered >= sessionTotal) { showScore(); return; }
+
+  currentQ = quizPool[answered % quizPool.length];
+  const charEl = document.getElementById('quiz-char');
+  charEl.textContent = currentQ.char;
+  charEl.classList.remove('animate-pop');
+  void charEl.offsetWidth;
+  charEl.classList.add('animate-pop');
+
+  document.getElementById('quiz-progress').style.width = (answered / sessionTotal * 100) + '%';
+  document.getElementById('combo-count').textContent = `${answered}/${sessionTotal}`;
+
+  const hint = quizMode === 'hard' && HIRAGANA.includes(currentQ)
+    ? 'এই হিরাগানার রোমান হরফ কী?'
+    : 'এই কাতাকানার রোমান হরফ কী?';
+  document.getElementById('quiz-hint').textContent = hint;
+
+  // Mode areas
+  const isType = quizMode === 'type' || quizMode === 'hard';
+  document.getElementById('type-mode-area').style.display = isType ? '' : 'none';
+  document.getElementById('choice-mode-area').style.display = isType ? 'none' : '';
+
+  if (isType) {
+    const inp = document.getElementById('type-answer');
+    inp.value = '';
+    inp.className = 'answer-input';
+    document.getElementById('type-feedback').className = 'feedback';
+    document.getElementById('type-feedback').textContent = '';
+    setTimeout(() => inp.focus(), 100);
+  } else {
+    buildOptions();
+  }
+}
+
+function buildOptions() {
+  const grid = document.getElementById('options-grid');
+  grid.innerHTML = '';
+  document.getElementById('choice-feedback').className = 'feedback';
+
+  const pool = quizMode === 'hard' ? [...KATAKANA, ...HIRAGANA] : KATAKANA;
+  const wrong4 = shuffle(pool.filter(k => k.roman !== currentQ.roman)).slice(0, 3);
+  const options = shuffle([currentQ, ...wrong4]);
+
+  options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.textContent = opt.roman;
+    btn.onclick = () => checkChoice(opt.roman, btn);
+    grid.appendChild(btn);
+  });
+}
+
+function checkTypeAnswer() {
+  const inp = document.getElementById('type-answer');
+  const val = inp.value.trim().toLowerCase();
+  if (!val) return;
+
+  const isCorrect = val === currentQ.roman;
+  inp.className = 'answer-input ' + (isCorrect ? 'correct' : 'wrong');
+
+  if (isCorrect) {
+    correct++; streak++;
+    showFeedback('type', '✓ সঠিক! ' + currentQ.bn, 'correct');
+  } else {
+    wrong++; streak = 0;
+    wrongAnswers.push({ char: currentQ.char, correct: currentQ.roman, user: val, bn: currentQ.bn });
+    showFeedback('type', `✗ ভুল — সঠিক উত্তর: ${currentQ.roman} (${currentQ.bn})`, 'wrong');
+  }
+  answered++;
+  updateStats();
+  setTimeout(nextQuestion, isCorrect ? 700 : 1600);
+}
+
+function checkChoice(selected, btn) {
+  document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
+  const isCorrect = selected === currentQ.roman;
+
+  if (isCorrect) {
+    btn.classList.add('correct');
+    correct++; streak++;
+    showFeedback('choice', '✓ সঠিক! ' + currentQ.bn, 'correct');
+  } else {
+    btn.classList.add('wrong');
+    wrong++; streak = 0;
+    wrongAnswers.push({ char: currentQ.char, correct: currentQ.roman, user: selected, bn: currentQ.bn });
+    // Show correct answer
+    document.querySelectorAll('.option-btn').forEach(b => {
+      if (b.textContent === currentQ.roman) b.classList.add('correct');
+    });
+    showFeedback('choice', `✗ সঠিক: ${currentQ.roman} (${currentQ.bn})`, 'wrong');
+  }
+  answered++;
+  updateStats();
+  setTimeout(nextQuestion, isCorrect ? 600 : 1500);
+}
+
+function showFeedback(type, msg, cls) {
+  const el = document.getElementById(type + '-feedback');
+  el.textContent = msg;
+  el.className = `feedback show ${cls}`;
+}
+
+function updateStats() {
+  document.getElementById('stat-correct').textContent = correct;
+  document.getElementById('stat-wrong').textContent = wrong;
+  document.getElementById('stat-streak').textContent = streak;
+}
+
+function showScore() {
+  document.getElementById('quiz-setup').style.display = 'none';
+  document.getElementById('quiz-score').style.display = '';
+
+  const pct = Math.round(correct / sessionTotal * 100);
+  document.getElementById('score-pct').textContent = pct + '%';
+  document.getElementById('score-sub').textContent = `${sessionTotal}টির মধ্যে ${correct}টি সঠিক`;
+
+  let emoji, title;
+  if (pct >= 90) { emoji = '🏆'; title = 'অসাধারণ!'; }
+  else if (pct >= 70) { emoji = '🎉'; title = 'দারুণ করেছো!'; }
+  else if (pct >= 50) { emoji = '👍'; title = 'ভালো চেষ্টা!'; }
+  else { emoji = '💪'; title = 'আরও অনুশীলন করো!'; }
+
+  document.getElementById('score-emoji').textContent = emoji;
+  document.getElementById('score-title').textContent = title;
+
+  if (wrongAnswers.length > 0) {
+    const list = document.getElementById('wrong-list');
+    list.style.display = '';
+    const items = document.getElementById('wrong-items');
+    items.innerHTML = wrongAnswers.map(w => `
+      <div class="wrong-item">
+        <span class="wrong-kana">${w.char}</span>
+        <div class="wrong-answer">
+          <div class="correct-a">✓ ${w.correct} (${w.bn})</div>
+          <div class="user-a">তুমি লিখেছিলে: ${w.user}</div>
+        </div>
+      </div>
+    `).join('');
+  }
+}
+
+// ===== UTILS =====
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// ===== INSTALL =====
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  if (!sessionStorage.getItem('install-dismissed')) {
+    document.getElementById('install-banner').classList.add('show');
+  }
+});
+
+function installApp() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(() => {
+      document.getElementById('install-banner').classList.remove('show');
+      deferredPrompt = null;
+    });
+  } else if (isIOS) {
+    document.getElementById('ios-guide').classList.add('show');
+  }
+}
+
+function showInstallGuide() {
+  if (deferredPrompt) {
+    installApp();
+  } else if (isIOS) {
+    document.getElementById('ios-guide').classList.add('show');
+  } else {
+    alert('অ্যাপটি ইতিমধ্যে ইনস্টল করা আছে বা ব্রাউজার সাপোর্ট করে না।');
+  }
+}
+
+// Enter key for type mode
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('type-mode-area').style.display !== 'none') {
+    checkTypeAnswer();
+  }
+});
+
+// ===== INIT =====
+buildChart();
+
+// Register SW
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>
